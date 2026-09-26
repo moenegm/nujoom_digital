@@ -1,0 +1,528 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#121014;
+    --panel:#1c1820;
+    --panel-2:#231e28;
+    --ruby:#9b1b30;
+    --ruby-bright:#d42a4c;
+    --gold:#c9a66b;
+    --paper:#ede7dd;
+    --paper-dim:#c9c2b6;
+    --line: rgba(237,231,221,0.12);
+    --radius: 2px;
+  }
+
+  * { box-sizing: border-box; }
+
+  .m-negm-site {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .m-negm-site h1, .m-negm-site h2, .m-negm-site h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+    margin: 0;
+  }
+  .m-negm-site a { color: inherit; }
+  .m-negm-site .mono { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em; }
+  .m-negm-site button, .m-negm-site input, .m-negm-site textarea {
+    font-family: inherit;
+  }
+  .m-negm-site :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(18,16,20,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner { display:flex; align-items:center; justify-content:space-between; padding: 16px 28px; max-width: 1080px; margin: 0 auto; }
+  .brand { font-family:'Fraunces',serif; font-weight:600; font-size:18px; display:flex; align-items:center; gap:10px; }
+  .brand .facet-mini { width:14px; height:14px; flex-shrink:0; }
+  .nav-links { display:flex; gap:28px; font-size:14px; }
+  .nav-links a { text-decoration:none; color: var(--paper-dim); transition: color .2s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero { position:relative; padding: 100px 0 90px; overflow:hidden; }
+  .hero-grid { display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items:center; }
+  .eyebrow {
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color: var(--gold); margin-bottom: 18px; display:block;
+  }
+  .hero h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.05; }
+  .hero h1 em { font-style:normal; color: var(--ruby-bright); }
+  .hero p.lead { color: var(--paper-dim); font-size: 18px; max-width: 46ch; margin-top: 20px; }
+  .hero-ctas { display:flex; gap:14px; margin-top: 34px; flex-wrap:wrap; }
+
+  .btn {
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 13px 24px; border-radius: var(--radius); border: 1px solid transparent;
+    font-size: 14px; font-weight:600; cursor:pointer; text-decoration:none;
+    transition: transform .15s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--ruby-bright); color: #fff; }
+  .btn-primary:hover { background: #b8233f; }
+  .btn-ghost { border-color: var(--line); color: var(--paper); background: transparent; }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  .facet-wrap { position:relative; display:flex; justify-content:center; align-items:center; }
+  .facet-gem { width: min(360px, 90%); height:auto; filter: drop-shadow(0 30px 60px rgba(155,27,48,0.35)); }
+  .facet-gem .shine { animation: shimmer 5s ease-in-out infinite; transform-origin: center; }
+  @keyframes shimmer {
+    0%, 100% { opacity: .35; }
+    50% { opacity: .85; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .facet-gem .shine { animation: none; opacity: .55; }
+  }
+
+  /* SECTION SHELL */
+  section { padding: 84px 0; border-top: 1px solid var(--line); }
+  .section-head { max-width: 640px; margin-bottom: 48px; }
+  .section-head .eyebrow { margin-bottom: 12px; }
+  .section-head h2 { font-size: clamp(26px, 3.4vw, 36px); }
+  .section-head p { color: var(--paper-dim); margin-top: 14px; font-size: 16px; }
+
+  /* CAPABILITIES */
+  .cap-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .cap-card { background: var(--panel); padding: 30px 26px; }
+  .cap-num { font-family:'JetBrains Mono', monospace; font-size:12px; color: var(--gold); display:block; margin-bottom:16px; }
+  .cap-card h3 { font-size: 19px; margin-bottom: 10px; }
+  .cap-card p { color: var(--paper-dim); font-size: 14.5px; margin:0; }
+
+  /* PROOF CALLOUT */
+  .proof {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--ruby-bright);
+    padding: 26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+    margin-top: 40px;
+  }
+  .proof .mark { font-family:'Fraunces',serif; font-size: 34px; color: var(--ruby-bright); line-height:1; }
+  .proof p { margin:0; color: var(--paper-dim); font-size: 15px; }
+  .proof strong { color: var(--paper); }
+
+  /* BOOKING */
+  .book-layout { display:grid; grid-template-columns: 300px 1fr; gap: 40px; }
+  .book-note { font-size: 14.5px; color: var(--paper-dim); }
+  .book-note .mono-line { display:flex; gap:10px; align-items:baseline; margin-top:18px; font-size: 13px; }
+  .book-note .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+  .dot.open { background: var(--gold); }
+  .dot.taken { background: var(--paper-dim); opacity:.4; }
+
+  .day-col { display:flex; flex-direction:column; gap: 20px; }
+  .day-block { border: 1px solid var(--line); background: var(--panel); }
+  .day-block-head {
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding: 14px 18px; border-bottom: 1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:13px; color: var(--gold);
+  }
+  .slot-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
+  .slot-btn {
+    padding: 16px 18px; text-align:left; background: transparent; border: none;
+    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    color: var(--paper); cursor:pointer; font-size: 14px;
+    display:flex; flex-direction:column; gap:6px; transition: background .15s ease;
+  }
+  .slot-row .slot-btn:last-child { border-right:none; }
+  .slot-btn:hover:not(:disabled) { background: var(--panel-2); }
+  .slot-btn .t { font-family:'JetBrains Mono', monospace; font-size:14px; }
+  .slot-btn .s { font-size: 11px; text-transform:uppercase; letter-spacing:.08em; color: var(--gold); }
+  .slot-btn:disabled { cursor:not-allowed; opacity:.4; }
+  .slot-btn:disabled .s { color: var(--paper-dim); }
+  .slot-btn.selected { background: var(--ruby); }
+  .slot-btn.selected .s { color: #fff; }
+
+  .book-form {
+    margin-top: 22px; background: var(--panel); border: 1px solid var(--line);
+    padding: 22px; display:none;
+  }
+  .book-form.show { display:block; }
+  .book-form h4 { font-size: 15px; margin-bottom: 4px; }
+  .book-form .selected-slot { color: var(--gold); font-family:'JetBrains Mono', monospace; font-size: 13px; margin-bottom: 16px; }
+  .field { margin-bottom: 14px; }
+  .field label { display:block; font-size: 12.5px; color: var(--paper-dim); margin-bottom: 6px; }
+  .field input, .field textarea {
+    width: 100%; background: var(--ink); border: 1px solid var(--line); color: var(--paper);
+    padding: 11px 12px; font-size: 14px; border-radius: var(--radius);
+  }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .book-confirm {
+    display:none; margin-top: 22px; padding: 18px 20px;
+    background: rgba(201,166,107,0.1); border: 1px solid var(--gold); color: var(--paper);
+    font-size: 14px;
+  }
+  .book-confirm.show { display:block; }
+  .book-error { color: var(--ruby-bright); font-size: 13px; margin-top: 8px; display:none; }
+  .book-error.show { display:block; }
+
+  /* CONTACT */
+  .contact-layout { display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items:start; }
+  .contact-form .field input, .contact-form .field textarea { background: var(--panel); }
+  .contact-side p { color: var(--paper-dim); font-size: 15px; }
+  .contact-side .email-line {
+    margin-top: 18px; font-family:'JetBrains Mono', monospace; font-size: 15px;
+    color: var(--gold); word-break: break-all;
+  }
+  .fallback-link { display:none; margin-top: 14px; font-size: 13px; }
+  .fallback-link.show { display:block; }
+
+  footer { padding: 40px 0; text-align:center; color: var(--paper-dim); font-size: 13px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .facet-wrap { order:-1; }
+    .cap-grid { grid-template-columns: 1fr; }
+    .book-layout { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="m-negm-site">
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <svg class="facet-mini" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 9l8 13 8-13-8-7z" fill="#d42a4c"/><path d="M12 2L4 9h16L12 2z" fill="#c9a66b"/></svg>
+        M. Negm — Web &amp; App Development
+      </div>
+      <div class="nav-links">
+        <a href="#work">What I Build</a>
+        <a href="#booking">Book a Call</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Ruby on Rails · Custom web &amp; app development</span>
+        <h1>I build software <em>cut to fit</em> your business — not the other way around.</h1>
+        <p class="lead">Off-the-shelf tools are fast until they aren't. I design and build custom booking systems, client portals, and business applications in Ruby on Rails — made for exactly how you work.</p>
+        <div class="hero-ctas">
+          <a href="#booking" class="btn btn-primary">Book a free call</a>
+          <a href="#work" class="btn btn-ghost">See what I build</a>
+        </div>
+      </div>
+      <div class="facet-wrap">
+        <svg class="facet-gem" viewBox="0 0 300 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="150,10 90,80 210,80" fill="#c9a66b"/>
+          <polygon points="90,80 150,10 40,110" fill="#9b1b30"/>
+          <polygon points="210,80 150,10 260,110" fill="#b8233f"/>
+          <polygon points="40,110 90,80 150,150 150,190" fill="#7a1626" class="shine"/>
+          <polygon points="260,110 210,80 150,150 150,190" fill="#d42a4c" class="shine"/>
+          <polygon points="90,80 210,80 150,150" fill="#e8455f"/>
+          <polygon points="150,190 40,110 20,140 150,300" fill="#61121f"/>
+          <polygon points="150,190 260,110 280,140 150,300" fill="#9b1b30" class="shine"/>
+          <polygon points="20,140 150,300 150,190" fill="#4a0e19"/>
+          <polygon points="280,140 150,300 150,190" fill="#7a1626"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">What I Build</span>
+        <h2>Software built around how your business actually runs.</h2>
+        <p>Every business has its own edge cases — the way you take bookings, the way your team is scheduled, the reports you need on a Friday afternoon. I build for those, not around them.</p>
+      </div>
+      <div class="cap-grid">
+        <div class="cap-card">
+          <span class="cap-num mono">01</span>
+          <h3>Custom booking &amp; scheduling</h3>
+          <p>Multi-provider calendars, availability rules, buffer times, and no-double-booking logic — built for your business, not rented from a SaaS platform.</p>
+        </div>
+        <div class="cap-card">
+          <span class="cap-num mono">02</span>
+          <h3>Client portals &amp; dashboards</h3>
+          <p>Give clients and staff a home base to see orders, appointments, invoices, or project status — without another spreadsheet in the mix.</p>
+        </div>
+        <div class="cap-card">
+          <span class="cap-num mono">03</span>
+          <h3>Business web applications</h3>
+          <p>Full Ruby on Rails applications built to handle your actual workflow — inventory, staff scheduling, order management, internal tools.</p>
+        </div>
+        <div class="cap-card">
+          <span class="cap-num mono">04</span>
+          <h3>API integrations &amp; automation</h3>
+          <p>Connect the tools you already use — payments, email, SMS, calendars — and automate the manual steps in between.</p>
+        </div>
+        <div class="cap-card">
+          <span class="cap-num mono">05</span>
+          <h3>E-commerce &amp; ordering</h3>
+          <p>Custom storefronts and ordering flows tuned to your catalog and pricing — not squeezed into a generic template.</p>
+        </div>
+        <div class="cap-card">
+          <span class="cap-num mono">06</span>
+          <h3>Ongoing support</h3>
+          <p>Software that ships is the start, not the end. I stay on to fix, extend, and grow the system as your business changes.</p>
+        </div>
+      </div>
+
+      <div class="proof">
+        <span class="mark">”</span>
+        <p><strong>The booking calendar below isn't a template or a Calendly embed —</strong> I built it from scratch for this site: real availability, no double-booking, no subscription fee. It's a working example of exactly what I'd build for your business.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="booking">
+    <div class="wrap book-layout">
+      <div>
+        <span class="eyebrow">Book a Call</span>
+        <h2 style="font-size:26px; margin-bottom:14px;">Pick a slot.</h2>
+        <p class="book-note">30-minute intro call — no charge, no pressure. Times shown are Pacific.</p>
+        <div class="mono-line"><span class="dot open"></span><span>Open slot</span></div>
+        <div class="mono-line"><span class="dot taken"></span><span>Already booked</span></div>
+      </div>
+
+      <div>
+        <div class="day-col" id="dayCol"></div>
+
+        <div class="book-form" id="bookForm">
+          <h4>Confirm your call</h4>
+          <div class="selected-slot" id="selectedSlotLabel"></div>
+          <div class="field">
+            <label for="bkName">Name</label>
+            <input id="bkName" type="text" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="bkEmail">Email</label>
+            <input id="bkEmail" type="email" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="bkNote">What are you looking to build? (optional)</label>
+            <textarea id="bkNote"></textarea>
+          </div>
+          <button class="btn btn-primary" id="bkSubmit" type="button">Confirm booking</button>
+          <div class="book-error" id="bkError">Please add your name and a valid email.</div>
+        </div>
+
+        <div class="book-confirm" id="bookConfirm"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap contact-layout">
+      <div class="contact-side">
+        <span class="eyebrow">Contact</span>
+        <h2 style="font-size:26px; margin-bottom:14px;">Have a project in mind?</h2>
+        <p>Tell me what you're trying to build and I'll follow up within a day or two.</p>
+        <div class="email-line">mr.negm90@gmail.com</div>
+        <a class="fallback-link" id="fallbackLink" href="#">Your email app didn't open? Click here to email directly →</a>
+      </div>
+      <form class="contact-form" id="contactForm">
+        <div class="field">
+          <label for="cName">Name</label>
+          <input id="cName" type="text" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="cEmail">Email</label>
+          <input id="cEmail" type="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="cMessage">Message</label>
+          <textarea id="cMessage" required></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Send message</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    © <span id="year"></span> M. Negm — Ruby on Rails development. Built to show what's possible.
+  </footer>
+</div>
+
+<script>
+(function() {
+  const root = document;
+  root.getElementById('year').textContent = new Date().getFullYear();
+
+  const TIMES = [
+    { key: '10:00', label: '10:00 AM' },
+    { key: '13:00', label: '1:00 PM' },
+    { key: '15:30', label: '3:30 PM' },
+  ];
+
+  function nextBusinessDays(count) {
+    const days = [];
+    let d = new Date();
+    d.setDate(d.getDate() + 1); // start tomorrow
+    while (days.length < count) {
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) {
+        days.push(new Date(d));
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    return days;
+  }
+
+  function fmtDate(d) {
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  function isoDate(d) {
+    return d.toISOString().slice(0, 10);
+  }
+
+  const days = nextBusinessDays(6);
+  const dayCol = root.getElementById('dayCol');
+  let bookings = [];
+  let selected = null; // { date, time, label }
+
+  function slotTaken(dateIso, timeKey) {
+    return bookings.some(b => b.date === dateIso && b.time === timeKey);
+  }
+
+  function render() {
+    dayCol.innerHTML = '';
+    days.forEach(d => {
+      const iso = isoDate(d);
+      const block = document.createElement('div');
+      block.className = 'day-block';
+
+      const head = document.createElement('div');
+      head.className = 'day-block-head';
+      head.innerHTML = `<span>${fmtDate(d)}</span>`;
+      block.appendChild(head);
+
+      const row = document.createElement('div');
+      row.className = 'slot-row';
+
+      TIMES.forEach(t => {
+        const taken = slotTaken(iso, t.key);
+        const btn = document.createElement('button');
+        btn.className = 'slot-btn';
+        btn.disabled = taken;
+        btn.innerHTML = `<span class="t mono">${t.label}</span><span class="s">${taken ? 'Booked' : 'Open'}</span>`;
+        if (selected && selected.date === iso && selected.time === t.key) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => {
+          selected = { date: iso, time: t.key, label: `${fmtDate(d)} · ${t.label} PT` };
+          render();
+          showForm();
+        });
+        row.appendChild(btn);
+      });
+
+      block.appendChild(row);
+      dayCol.appendChild(block);
+    });
+  }
+
+  const bookForm = root.getElementById('bookForm');
+  const selectedSlotLabel = root.getElementById('selectedSlotLabel');
+  const bkError = root.getElementById('bkError');
+  const bookConfirm = root.getElementById('bookConfirm');
+
+  function showForm() {
+    bookForm.classList.add('show');
+    bookConfirm.classList.remove('show');
+    bkError.classList.remove('show');
+    selectedSlotLabel.textContent = selected.label;
+    bookForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function loadBookings() {
+    bookings = [];
+    render();
+  }
+  
+  root.getElementById('bkSubmit').addEventListener('click', async () => {
+    const name = root.getElementById('bkName').value.trim();
+    const email = root.getElementById('bkEmail').value.trim();
+    const note = root.getElementById('bkNote').value.trim();
+    const emailOk = /\S+@\S+\.\S+/.test(email);
+
+    if (!name || !emailOk || !selected) {
+      bkError.classList.add('show');
+      return;
+    }
+    bkError.classList.remove('show');
+
+    try {
+      await window.storage.set('bookings-v1', JSON.stringify(bookings), true);
+    } catch (e) {
+      bkError.textContent = 'Something went wrong saving your booking — please try again.';
+      bkError.classList.add('show');
+      return;
+    }
+
+    if (slotTaken(selected.date, selected.time)) {
+      bkError.textContent = 'Sorry — that slot was just taken. Pick another.';
+      bkError.classList.add('show');
+      selected = null;
+      render();
+      bookForm.classList.remove('show');
+      return;
+    }
+
+    bookings.push({
+      date: selected.date,
+      time: selected.time,
+      name, email, note,
+      bookedAt: new Date().toISOString()
+    });
+
+    try {
+      await window.storage.set('bookings-v1', JSON.stringify(bookings), true);
+    } catch (e) {
+      bkError.textContent = 'Something went wrong saving your booking — please try again.';
+      bkError.classList.add('show');
+      return;
+    }
+
+    bookConfirm.textContent = `You're booked for ${selected.label}. A confirmation would normally be emailed to ${email} — for now, reach out at mr.negm90@gmail.com to lock it in on my end.`;
+    bookConfirm.classList.add('show');
+    bookForm.classList.remove('show');
+    root.getElementById('bkName').value = '';
+    root.getElementById('bkEmail').value = '';
+    root.getElementById('bkNote').value = '';
+    selected = null;
+    render();
+  });
+
+  loadBookings();
+
+  // Contact form → mailto
+  const contactForm = root.getElementById('contactForm');
+  const fallbackLink = root.getElementById('fallbackLink');
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = root.getElementById('cName').value.trim();
+    const email = root.getElementById('cEmail').value.trim();
+    const message = root.getElementById('cMessage').value.trim();
+    if (!name || !email || !message) return;
+
+    const subject = encodeURIComponent(`New project inquiry from ${name}`);
+    const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
+    const mailto = `mailto:mr.negm90@gmail.com?subject=${subject}&body=${body}`;
+
+    window.open(mailto, '_blank');
+    fallbackLink.href = mailto;
+    fallbackLink.classList.add('show');
+  });
+})();
+</script>
