@@ -90,6 +90,7 @@ production:
     database: bookingapp_production
     username: bookingapp
     password: <%= ENV["BOOKINGAPP_DATABASE_PASSWORD"] %>
+    host: <%= ENV.fetch("DB_HOST", "localhost") %>
   cache:
     <<: *primary_production
     database: bookingapp_production_cache
