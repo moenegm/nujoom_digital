@@ -6,6 +6,10 @@ gem "rails", "~> 8.1.3", ">= 8.1.3.1"
 gem "propshaft"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
+
+# Send transactional email over HTTPS (port 443) instead of SMTP — our host
+# blocks outbound SMTP ports (587/465), so a normal SMTP relay can't be used.
+gem "resend"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]

@@ -40,18 +40,11 @@ Rails.application.configure do
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
-  # Send real email in development via Gmail SMTP, so bookings can be
-  # tested end-to-end. Credentials come from `bin/rails credentials:edit`.
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    domain: "gmail.com",
-    user_name: Rails.application.credentials.dig(:gmail, :username),
-    password: Rails.application.credentials.dig(:gmail, :app_password),
-    authentication: "plain",
-    enable_starttls_auto: true
-  }
+  # Send real email in development via Resend's API, so bookings can be
+  # tested end-to-end. Same delivery path as production — see
+  # config/initializers/resend.rb. Credentials come from
+  # `bin/rails credentials:edit`.
+  config.action_mailer.delivery_method = :resend
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
