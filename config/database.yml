@@ -16,7 +16,12 @@ default: &default
   adapter: postgresql
   encoding: unicode
   # Give the pool a bit of headroom over the thread count.
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i + 10 %>
+  # Kept modest on purpose: this is a low-traffic site on a small (1GB)
+  # server, and there are 4 separate databases in production (primary,
+  # cache, queue, cable) each opening their own pool — a large pool here
+  # multiplies into dozens of simultaneous connections at boot, which was
+  # slow enough on this server to blow past Kamal's health-check timeout.
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 
 development:

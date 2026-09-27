@@ -22,6 +22,10 @@ servers:
 proxy:
   ssl: true
   host: nujoomdigital.com
+  healthcheck:
+    path: /up
+    timeout: 60
+    interval: 2
 
 # Where you keep your container images.
 registry:
