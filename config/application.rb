@@ -27,5 +27,9 @@ module Bookingapp
     config.time_zone = "Abu Dhabi"
     config.active_record.default_timezone = :utc
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # English / Arabic toggle for the public site.
+    config.i18n.available_locales = [ :en, :ar ]
+    config.i18n.default_locale = :en
   end
 end

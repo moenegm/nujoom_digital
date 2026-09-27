@@ -16,11 +16,11 @@ class BookingsController < ApplicationController
 
       {
         date: date.iso8601,
-        label: date.strftime("%a, %b %-d"),
+        label: I18n.l(date, format: :day_picker),
         slots: slots.map do |slot|
           {
             time: slot.strftime("%H:%M"),
-            label: slot.strftime("%-I:%M %p"),
+            label: I18n.l(slot, format: :slot),
             available: !taken_at.include?(slot)
           }
         end

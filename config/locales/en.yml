@@ -1,31 +1,97 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  date:
+    abbr_day_names:
+      - Sun
+      - Mon
+      - Tue
+      - Wed
+      - Thu
+      - Fri
+      - Sat
+    day_names:
+      - Sunday
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+    abbr_month_names: [ ~, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec ]
+    month_names:
+      - ~
+      - January
+      - February
+      - March
+      - April
+      - May
+      - June
+      - July
+      - August
+      - September
+      - October
+      - November
+      - December
+    formats:
+      day_picker: "%a, %b %-d"
+  time:
+    am: "AM"
+    pm: "PM"
+    formats:
+      slot: "%-I:%M %p"
+
+  site:
+    nav:
+      services: "Services"
+      booking: "Book a Call"
+      contact: "Contact"
+      lang_toggle: "العربية"
+    hero:
+      eyebrow: "Nujoom Digital · Muscat, Oman"
+      title_html: "Get online, get found, and get seen — all from one place."
+      lead: "We build the website and booking system, set up your Google Business listing and social accounts, shoot the photos and video that make you look the part, and offer tutoring built on real teaching experience."
+      cta_primary: "Book a free call"
+      cta_secondary: "See our services"
+    services:
+      eyebrow: "Services"
+      title: "Three ways we help your business grow."
+      lead: "Whether you need a working website, a stronger presence online, or extra academic support for your kids, we build it, run it, and stay on to support it."
+      dev_title: "Software Development"
+      dev_body: "Custom websites, booking and scheduling systems, client portals, and business tools — built in Ruby on Rails and made to fit exactly how you work, not squeezed into a template."
+      photo_title: "Photography & Production"
+      photo_body: "Getting found starts with showing up right: a Google Business Profile and Maps listing, an Instagram presence, photos and video that represent you well, and the ads to put them in front of the right people."
+      tutor_title: "Tutoring"
+      tutor_body: "One-on-one and small-group tutoring built on a strong education background — for students who need real explanations, not just answers."
+      proof: "The booking calendar below isn't a template or a Calendly embed — we built it from scratch for this site: real availability, no double-booking, no subscription fee. It's a working example of exactly what we'd build for your business."
+    booking:
+      eyebrow: "Book a Call"
+      title: "Pick a day and time."
+      note: "30-minute intro call — no charge, no pressure. Times shown are Muscat time (GST). Struck-through times are already booked."
+      open_count:
+        one: "%{count} open"
+        other: "%{count} open"
+      full: "Fully booked"
+      no_slots: "No times left this day — try another day above."
+      form_title: "Confirm your call"
+      name_label: "Name"
+      email_label: "Email"
+      note_label: "What are you looking to build? (optional)"
+      submit: "Confirm booking"
+      error_generic: "Please add your name and a valid email."
+      error_failed: "Something went wrong — please try again."
+      error_taken: "Sorry — that slot was just taken. Pick another."
+      confirm_html: "You're booked for %{slot}. We'll be in touch to confirm — reach out anytime at %{email} if you need to change anything."
+    contact:
+      eyebrow: "Contact"
+      title: "Have a project in mind?"
+      lead: "Tell us what you're trying to build and we'll follow up within a day or two."
+      find_us: "Find us on Google →"
+      instagram: "Follow us on Instagram"
+      name_label: "Name"
+      email_label: "Email"
+      message_label: "Message"
+      submit: "Send message"
+      error_generic: "Please fill in all fields with a valid email."
+      error_failed: "Something went wrong — please try again."
+      confirm_html: "Thanks, %{name} — your message is on its way. We'll follow up within a day or two."
+    footer:
+      text_html: "© %{year} Nujoom Digital — websites, social media, and tutoring, based in Muscat."
