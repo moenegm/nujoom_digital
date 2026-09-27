@@ -2,15 +2,15 @@
 service: bookingapp
 
 # Name of the container image (use your-user/app-name on external registries).
-image: bookingapp
+image: moenegm/nujoom_digital
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 168.144.156.157
   # job:
   #   hosts:
-  #     - 192.168.0.1
+  #     - 168.144.156.157
   #   cmd: bin/jobs
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -19,27 +19,27 @@ servers:
 # Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-#
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  ssl: true
+  host: nujoomdigital.com
 
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
+  # (server omitted — defaults to Docker Hub)
 
   # Needed for authenticated registries.
-  # username: your-user
+  username: moenegm
 
   # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - BOOKINGAPP_DATABASE_PASSWORD
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -51,9 +51,9 @@ env:
     # Set number of cores available to the application on each server (default: 1).
     # WEB_CONCURRENCY: 2
 
-    # Match this to any external database server to configure Active Record correctly
-    # Use bookingapp-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
+    # Match this to the db accessory below — reachable on Kamal's internal docker network
+    # as "<service>-<accessory name>".
+    DB_HOST: bookingapp-db
 
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
@@ -95,25 +95,16 @@ builder:
 #   user: app
 
 # Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+accessories:
+  db:
+    image: postgres:16
+    host: 168.144.156.157
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_USER: bookingapp
+        POSTGRES_DB: bookingapp_production
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
