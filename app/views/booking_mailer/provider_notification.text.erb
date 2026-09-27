@@ -1,0 +1,10 @@
+You've got a new booking.
+
+<%= @booking.client_name %> booked <%= @formatted_time %>.
+
+Email: <%= @booking.client_email %>
+<% if @booking.note.present? %>
+What they're looking to build: <%= @booking.note %>
+<% end %>
+You can reply directly to this email to reach them, or manage the booking at
+https://nujoomdigital.com/admin/bookings.

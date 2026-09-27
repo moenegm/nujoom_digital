@@ -33,6 +33,28 @@ class BookingMailer < ApplicationMailer
     mail(to: booking.client_email, subject: subject)
   end
 
+  # Sent to the provider (you) whenever someone books a call, since there
+  # was previously no way to notice a new booking short of checking the
+  # site. Reply-to is set to the client so you can just hit reply.
+  def provider_notification(booking)
+    @booking = booking
+    @formatted_time = format_time(booking)
+
+    mail(
+      to: booking.provider.email,
+      reply_to: booking.client_email,
+      subject: "New booking — #{@formatted_time}"
+    )
+  end
+
+  # Sent to the client when an admin cancels their booking from /admin.
+  def cancellation(booking)
+    @booking = booking
+    @formatted_time = format_time(booking)
+
+    mail(to: booking.client_email, subject: "Your call with Nujoom Digital has been cancelled")
+  end
+
   private
 
   def format_time(booking)

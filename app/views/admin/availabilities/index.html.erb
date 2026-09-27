@@ -1,0 +1,61 @@
+<h1>Availability</h1>
+<p class="muted" style="margin-top:-14px; margin-bottom:26px;">These windows control which days and times show up as bookable on the site.</p>
+
+<% if @availabilities.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Hours</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @availabilities.each do |availability| %>
+        <tr>
+          <td data-label="Day"><%= availability.day_name %></td>
+          <td data-label="Hours"><%= availability.start_time.strftime("%-I:%M %p") %> – <%= availability.end_time.strftime("%-I:%M %p") %></td>
+          <td data-label="Actions">
+            <%= button_to "Remove", admin_availability_path(availability), method: :delete, class: "btn btn-danger",
+                  form: { data: { turbo_confirm: "Remove this availability window?" } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="muted">No availability windows set — the booking calendar will show no open days until you add one.</p>
+<% end %>
+
+<div class="card">
+  <h2>Add a window</h2>
+
+  <% if @availability.errors.any? %>
+    <div class="error-list">
+      <% @availability.errors.full_messages.each do |msg| %>
+        <div><%= msg %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= form_with model: @availability, url: admin_availabilities_path, local: true do |f| %>
+    <div class="field-row">
+      <div class="field">
+        <%= f.label :day_of_week, "Day" %>
+        <%= f.select :day_of_week, Availability::DAY_NAMES.each_with_index.map { |name, idx| [ name, idx ] } %>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <%= f.label :start_time, "Start time" %>
+        <%= f.time_field :start_time %>
+      </div>
+      <div class="field">
+        <%= f.label :end_time, "End time" %>
+        <%= f.time_field :end_time %>
+      </div>
+    </div>
+
+    <%= f.submit "Add window", class: "btn btn-primary" %>
+  <% end %>
+</div>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin — Nujoom Digital</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+      :root {
+        --ink:#0d1a30; --panel:#152642; --panel-2:#1b3050;
+        --gold:#c9a04c; --gold-bright:#e0bd6e;
+        --paper:#ece7da; --paper-dim:#a9b3c6;
+        --line: rgba(242,229,196,0.14);
+        --danger: #d9695f;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--ink); color: var(--paper);
+        font-family: 'Inter', sans-serif; line-height: 1.5;
+      }
+      a { color: var(--gold); }
+      .admin-wrap { max-width: 920px; margin: 0 auto; padding: 32px 24px 80px; }
+      .admin-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 12px; }
+      .admin-nav .brand { font-weight: 700; font-size: 18px; }
+      .admin-nav .links { display: flex; gap: 20px; font-size: 14px; }
+      .admin-nav .links a { text-decoration: none; color: var(--paper-dim); }
+      .admin-nav .links a.active, .admin-nav .links a:hover { color: var(--gold); }
+
+      h1 { font-size: 24px; margin: 0 0 22px; }
+      .flash {
+        background: rgba(201,160,76,0.12); border: 1px solid var(--gold);
+        color: var(--paper); padding: 12px 16px; margin-bottom: 22px; font-size: 14px; border-radius: 2px;
+      }
+
+      table { width: 100%; border-collapse: collapse; margin-bottom: 34px; font-size: 14px; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      th { color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+      tr:last-child td { border-bottom: none; }
+      .muted { color: var(--paper-dim); }
+      .actions { display: flex; gap: 10px; white-space: nowrap; }
+
+      .card { background: var(--panel); border: 1px solid var(--line); padding: 22px; margin-bottom: 30px; border-radius: 2px; }
+      .card h2 { font-size: 16px; margin: 0 0 16px; }
+
+      .field { margin-bottom: 14px; }
+      .field label { display: block; font-size: 12.5px; color: var(--paper-dim); margin-bottom: 6px; }
+      .field input, .field select, .field textarea {
+        width: 100%; background: var(--ink); border: 1px solid var(--line); color: var(--paper);
+        padding: 10px 12px; font-size: 14px; border-radius: 2px; font-family: inherit;
+      }
+      .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .error-list { color: var(--danger); font-size: 13px; margin-bottom: 14px; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 2px;
+        border: 1px solid transparent; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+      }
+      .btn-primary { background: var(--gold); color: var(--ink); }
+      .btn-ghost { border-color: var(--line); color: var(--paper); background: transparent; }
+      .btn-danger { border-color: var(--danger); color: var(--danger); background: transparent; }
+      .btn-danger:hover { background: rgba(217,105,95,0.12); }
+
+      @media (max-width: 640px) {
+        .field-row { grid-template-columns: 1fr; }
+        table, thead, tbody, th, td, tr { display: block; }
+        thead { display: none; }
+        tr { margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+        td { border: none; padding: 4px 0; }
+        td::before { content: attr(data-label); display: block; font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: .04em; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="admin-wrap">
+      <div class="admin-nav">
+        <div class="brand">Nujoom Digital · Admin</div>
+        <div class="links">
+          <%= link_to "Bookings", admin_bookings_path, class: (controller_name == "bookings" ? "active" : nil) %>
+          <%= link_to "Availability", admin_availabilities_path, class: (controller_name == "availabilities" ? "active" : nil) %>
+          <%= link_to "View site →", root_path, target: "_blank", rel: "noopener" %>
+        </div>
+      </div>
+
+      <% if notice %>
+        <div class="flash"><%= notice %></div>
+      <% end %>
+
+      <%= yield %>
+    </div>
+  </body>
+</html>

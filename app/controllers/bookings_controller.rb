@@ -67,6 +67,7 @@ class BookingsController < ApplicationController
 
   def send_booking_emails(booking)
     BookingMailer.confirmation(booking).deliver_later
+    BookingMailer.provider_notification(booking).deliver_later
 
     day_before_time = booking.starts_at - 24.hours
     if day_before_time > Time.current

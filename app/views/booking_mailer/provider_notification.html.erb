@@ -1,0 +1,12 @@
+<p>You've got a new booking.</p>
+
+<p><strong><%= @booking.client_name %></strong> booked <strong><%= @formatted_time %></strong>.</p>
+
+<p>Email: <a href="mailto:<%= @booking.client_email %>"><%= @booking.client_email %></a></p>
+
+<% if @booking.note.present? %>
+  <p><strong>What they're looking to build:</strong> <%= @booking.note %></p>
+<% end %>
+
+<p>You can reply directly to this email to reach them, or manage the booking at
+<a href="https://nujoomdigital.com/admin/bookings">nujoomdigital.com/admin/bookings</a>.</p>
