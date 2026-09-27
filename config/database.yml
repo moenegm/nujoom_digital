@@ -15,7 +15,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # FIX 1: Change 'max_connections' to 'pool' and give it breathing room (15)
+  # Give the pool a bit of headroom over the thread count.
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i + 10 %>
 
 
@@ -92,7 +92,13 @@ production:
     host: <%= ENV.fetch("DB_HOST", "localhost") %>
   cache:
     <<: *primary_production
+    database: bookingapp_production_cache
+    migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
+    database: bookingapp_production_queue
+    migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
+    database: bookingapp_production_cable
+    migrations_paths: db/cable_migrate
