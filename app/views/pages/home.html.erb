@@ -1,5 +1,5 @@
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap');
 
   :root{
     --ink:#0d1a30;
@@ -22,6 +22,8 @@
     font-family: 'Inter', sans-serif;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
   .nujoom-site h1, .nujoom-site h2, .nujoom-site h3 {
     font-family: 'Fraunces', serif;
@@ -40,6 +42,23 @@
     outline-offset: 2px;
   }
 
+  /* Arabic — Noto Kufi Arabic reads better than Fraunces/Inter for Arabic
+     script, so switch fonts wholesale when the page is RTL. */
+  [dir="rtl"] .nujoom-site,
+  [dir="rtl"] .nujoom-site h1,
+  [dir="rtl"] .nujoom-site h2,
+  [dir="rtl"] .nujoom-site h3 {
+    font-family: 'Noto Kufi Arabic', 'Inter', sans-serif;
+  }
+  [dir="rtl"] .nujoom-site { direction: rtl; }
+  /* Numbers/times read more naturally kept left-to-right even inside an
+     Arabic page — this is standard practice for RTL interfaces. */
+  [dir="rtl"] .time-btn, [dir="rtl"] .selected-slot, [dir="rtl"] .email-line {
+    direction: ltr;
+  }
+  [dir="rtl"] .day-pill { text-align: right; }
+  [dir="rtl"] .proof { border-left: none; border-right: 3px solid var(--gold-bright); }
+
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
 
   /* NAV */
@@ -49,12 +68,39 @@
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
-  .nav-inner { display:flex; align-items:center; justify-content:space-between; padding: 16px 28px; max-width: 1080px; margin: 0 auto; }
-  .brand { font-family:'Fraunces',serif; font-weight:600; font-size:18px; display:flex; align-items:center; gap:10px; }
+  .nav-inner { display:flex; align-items:center; justify-content:space-between; padding: 16px 28px; max-width: 1080px; margin: 0 auto; gap: 20px; }
+  .brand { font-family:'Fraunces',serif; font-weight:600; font-size:18px; display:flex; align-items:center; gap:10px; white-space: nowrap; }
+  [dir="rtl"] .brand { font-family: 'Noto Kufi Arabic', sans-serif; }
   .brand .facet-mini { width:14px; height:14px; flex-shrink:0; }
-  .nav-links { display:flex; gap:28px; font-size:14px; }
-  .nav-links a { text-decoration:none; color: var(--paper-dim); transition: color .2s; }
+  .nav-links { display:flex; align-items:center; gap:28px; font-size:14px; }
+  .nav-links a { text-decoration:none; color: var(--paper-dim); transition: color .2s; white-space: nowrap; }
   .nav-links a:hover { color: var(--gold); }
+  .lang-switch {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 12px !important;
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px !important;
+  }
+  .lang-switch:hover { border-color: var(--gold); }
+
+  .nav-toggle {
+    display: none; background: none; border: none; color: var(--paper); cursor: pointer;
+    padding: 6px; flex-shrink: 0;
+  }
+  .nav-toggle svg { width: 24px; height: 24px; display: block; }
+
+  .nav-mobile {
+    display: none; flex-direction: column; padding: 4px 28px 18px; border-top: 1px solid var(--line);
+  }
+  .nav-mobile.open { display: flex; }
+  .nav-mobile a {
+    padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none;
+    color: var(--paper-dim); font-size: 15px;
+  }
+  .nav-mobile a:last-child { border-bottom: none; }
+
+  @media (max-width: 700px) {
+    .nav-links { display: none; }
+    .nav-toggle { display: inline-flex; }
+  }
 
   /* HERO */
   .hero { position:relative; padding: 100px 0 90px; overflow:hidden; }
@@ -63,8 +109,8 @@
     font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
     color: var(--gold); margin-bottom: 18px; display:block;
   }
-  .hero h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.05; }
-  .hero h1 em { font-style:normal; color: var(--gold-bright); }
+  [dir="rtl"] .eyebrow { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; }
+  .hero h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.15; }
   .hero p.lead { color: var(--paper-dim); font-size: 18px; max-width: 46ch; margin-top: 20px; }
   .hero-ctas { display:flex; gap:14px; margin-top: 34px; flex-wrap:wrap; }
 
@@ -112,9 +158,10 @@
 
   /* BOOKING */
   .book-layout { display:grid; grid-template-columns: 300px 1fr; gap: 40px; }
+  .book-layout > div { min-width: 0; }
   .book-note { font-size: 14.5px; color: var(--paper-dim); }
 
-  .day-picker { display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; margin-bottom:26px; scrollbar-width:thin; }
+  .day-picker { display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; margin-bottom:26px; scrollbar-width:thin; min-width: 0; }
   .day-pill {
     flex:0 0 auto; min-width:96px; text-align:left; cursor:pointer;
     background: var(--panel); border: 1px solid var(--line); color: var(--paper);
@@ -127,7 +174,7 @@
   .day-pill.selected .dname, .day-pill.selected .dcount { color: var(--ink); }
   .day-pill.full { opacity:.5; }
 
-  .time-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(112px,1fr)); gap:10px; }
+  .time-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(112px,1fr)); gap:10px; min-width: 0; }
   .time-btn {
     padding: 14px 10px; text-align:center; background: var(--panel); border: 1px solid var(--line);
     color: var(--paper); cursor:pointer; font-family:'JetBrains Mono', monospace; font-size:14px;
@@ -163,14 +210,23 @@
 
   /* CONTACT */
   .contact-layout { display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items:start; }
+  .contact-layout > div { min-width: 0; }
   .contact-form .field input, .contact-form .field textarea { background: var(--panel); }
   .contact-side p { color: var(--paper-dim); font-size: 15px; }
   .contact-side .email-line {
     margin-top: 18px; font-family:'JetBrains Mono', monospace; font-size: 15px;
     color: var(--gold); word-break: break-all;
   }
-  .gmb-link { display:inline-block; margin-top: 18px; font-size: 14px; color: var(--gold); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; }
-  .gmb-link:hover { color: var(--gold-bright); border-color: var(--gold); }
+  .map-frame {
+    position: relative; width: 100%; padding-bottom: 62%; height: 0;
+    overflow: hidden; border-radius: var(--radius); border: 1px solid var(--line);
+    margin-top: 20px;
+  }
+  .map-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .side-links { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  .side-link { display:inline-flex; align-items:center; gap:8px; font-size: 14px; color: var(--gold); text-decoration:none; }
+  .side-link:hover { color: var(--gold-bright); }
+  .side-link svg { width:16px; height:16px; flex-shrink:0; }
 
   footer { padding: 40px 0; text-align:center; color: var(--paper-dim); font-size: 13px; border-top: 1px solid var(--line); }
 
@@ -180,6 +236,19 @@
     .cap-grid { grid-template-columns: 1fr; }
     .book-layout { grid-template-columns: 1fr; }
     .contact-layout { grid-template-columns: 1fr; }
+  }
+
+  /* Phones — the day-picker/time-grid used a min column width (112px) that
+     was too wide for narrow screens: the grid kept trying to fit that many
+     columns and forced the whole page wider than the viewport, which is
+     what made the site look "zoomed out" with blank space on the right.
+     Switch to a fixed, small column count instead of auto-fill below. */
+  @media (max-width: 480px) {
+    .wrap { padding: 0 18px; }
+    .day-pill { min-width: 78px; padding: 10px 12px; }
+    .day-pill .dname { font-size: 12px; }
+    .time-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .time-btn { padding: 12px 6px; font-size: 13px; }
   }
 </style>
 
@@ -195,22 +264,32 @@
         Nujoom Digital
       </div>
       <div class="nav-links">
-        <a href="#work">Services</a>
-        <a href="#booking">Book a Call</a>
-        <a href="#contact">Contact</a>
+        <a href="#work"><%= t("site.nav.services") %></a>
+        <a href="#booking"><%= t("site.nav.booking") %></a>
+        <a href="#contact"><%= t("site.nav.contact") %></a>
+        <a class="lang-switch" href="?locale=<%= I18n.locale == :ar ? "en" : "ar" %>"><%= t("site.nav.lang_toggle") %></a>
       </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="nav-mobile" id="navMobile">
+      <a href="#work"><%= t("site.nav.services") %></a>
+      <a href="#booking"><%= t("site.nav.booking") %></a>
+      <a href="#contact"><%= t("site.nav.contact") %></a>
+      <a href="?locale=<%= I18n.locale == :ar ? "en" : "ar" %>"><%= t("site.nav.lang_toggle") %></a>
     </div>
   </nav>
 
   <header class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow">Nujoom Digital · Muscat, Oman</span>
-        <h1>Get online, get found, and get seen — all from one place.</h1>
-        <p class="lead">We build the website and booking system, set up your Google Business listing and social accounts, shoot the photos and video that make you look the part, and offer tutoring built on real teaching experience.</p>
+        <span class="eyebrow"><%= t("site.hero.eyebrow") %></span>
+        <h1><%= t("site.hero.title_html") %></h1>
+        <p class="lead"><%= t("site.hero.lead") %></p>
         <div class="hero-ctas">
-          <a href="#booking" class="btn btn-primary">Book a free call</a>
-          <a href="#work" class="btn btn-ghost">See our services</a>
+          <a href="#booking" class="btn btn-primary"><%= t("site.hero.cta_primary") %></a>
+          <a href="#work" class="btn btn-ghost"><%= t("site.hero.cta_secondary") %></a>
         </div>
       </div>
       <div class="facet-wrap">
@@ -222,31 +301,31 @@
   <section id="work">
     <div class="wrap">
       <div class="section-head">
-        <span class="eyebrow">Services</span>
-        <h2>Three ways we help your business grow.</h2>
-        <p>Whether you need a working website, a stronger presence online, or extra academic support for your kids, we build it, run it, and stay on to support it.</p>
+        <span class="eyebrow"><%= t("site.services.eyebrow") %></span>
+        <h2><%= t("site.services.title") %></h2>
+        <p><%= t("site.services.lead") %></p>
       </div>
       <div class="cap-grid">
         <div class="cap-card">
           <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="4" width="20" height="15" rx="1.5"/><path d="M2 8h20"/><path d="M8 13l-2 2 2 2M13 13l2 2-2 2"/></svg>
-          <h3>Software Development</h3>
-          <p>Custom websites, booking and scheduling systems, client portals, and business tools — built in Ruby on Rails and made to fit exactly how you work, not squeezed into a template.</p>
+          <h3><%= t("site.services.dev_title") %></h3>
+          <p><%= t("site.services.dev_body") %></p>
         </div>
         <div class="cap-card">
           <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="7" width="16" height="12" rx="1.5"/><path d="M9 7l1.5-2.5h3L15 7"/><circle cx="12" cy="13" r="3.2"/></svg>
-          <h3>Photography &amp; Production</h3>
-          <p>Getting found starts with showing up right: a Google Business Profile and Maps listing, an Instagram presence, photos and video that represent you well, and the ads to put them in front of the right people.</p>
+          <h3><%= t("site.services.photo_title") %></h3>
+          <p><%= t("site.services.photo_body") %></p>
         </div>
         <div class="cap-card">
           <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 8l10-4 10 4-10 4-10-4z"/><path d="M6 10.5V15c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/><path d="M22 8v5.5"/></svg>
-          <h3>Tutoring</h3>
-          <p>One-on-one and small-group tutoring built on a strong education background — for students who need real explanations, not just answers.</p>
+          <h3><%= t("site.services.tutor_title") %></h3>
+          <p><%= t("site.services.tutor_body") %></p>
         </div>
       </div>
 
       <div class="proof">
         <span class="mark">”</span>
-        <p><strong>The booking calendar below isn't a template or a Calendly embed —</strong> we built it from scratch for this site: real availability, no double-booking, no subscription fee. It's a working example of exactly what we'd build for your business.</p>
+        <p><%= t("site.services.proof") %></p>
       </div>
     </div>
   </section>
@@ -254,33 +333,33 @@
   <section id="booking">
     <div class="wrap book-layout">
       <div>
-        <span class="eyebrow">Book a Call</span>
-        <h2 style="font-size:26px; margin-bottom:14px;">Pick a day and time.</h2>
-        <p class="book-note">30-minute intro call — no charge, no pressure. Times shown are Muscat time (GST). Struck-through times are already booked.</p>
+        <span class="eyebrow"><%= t("site.booking.eyebrow") %></span>
+        <h2 style="font-size:26px; margin-bottom:14px;"><%= t("site.booking.title") %></h2>
+        <p class="book-note"><%= t("site.booking.note") %></p>
       </div>
 
       <div>
         <div class="day-picker" id="dayPicker"></div>
         <div class="time-grid" id="timeGrid"></div>
-        <div class="no-slots-msg" id="noSlotsMsg" style="display:none;">No times left this day — try another day above.</div>
+        <div class="no-slots-msg" id="noSlotsMsg" style="display:none;"></div>
 
         <div class="book-form" id="bookForm">
-          <h4>Confirm your call</h4>
+          <h4><%= t("site.booking.form_title") %></h4>
           <div class="selected-slot" id="selectedSlotLabel"></div>
           <div class="field">
-            <label for="bkName">Name</label>
+            <label for="bkName"><%= t("site.booking.name_label") %></label>
             <input id="bkName" type="text" autocomplete="name" />
           </div>
           <div class="field">
-            <label for="bkEmail">Email</label>
+            <label for="bkEmail"><%= t("site.booking.email_label") %></label>
             <input id="bkEmail" type="email" autocomplete="email" />
           </div>
           <div class="field">
-            <label for="bkNote">What are you looking to build? (optional)</label>
+            <label for="bkNote"><%= t("site.booking.note_label") %></label>
             <textarea id="bkNote"></textarea>
           </div>
-          <button class="btn btn-primary" id="bkSubmit" type="button">Confirm booking</button>
-          <div class="book-error" id="bkError">Please add your name and a valid email.</div>
+          <button class="btn btn-primary" id="bkSubmit" type="button"><%= t("site.booking.submit") %></button>
+          <div class="book-error" id="bkError"></div>
         </div>
 
         <div class="book-confirm" id="bookConfirm"></div>
@@ -291,43 +370,97 @@
   <section id="contact">
     <div class="wrap contact-layout">
       <div class="contact-side">
-        <span class="eyebrow">Contact</span>
-        <h2 style="font-size:26px; margin-bottom:14px;">Have a project in mind?</h2>
-        <p>Tell us what you're trying to build and we'll follow up within a day or two.</p>
+        <span class="eyebrow"><%= t("site.contact.eyebrow") %></span>
+        <h2 style="font-size:26px; margin-bottom:14px;"><%= t("site.contact.title") %></h2>
+        <p><%= t("site.contact.lead") %></p>
         <div class="email-line">mr.negm90@gmail.com</div>
-        <a class="gmb-link" href="https://maps.app.goo.gl/ite1ynLcf1CYcKJr5" target="_blank" rel="noopener">Find us on Google →</a>
+
+        <div class="map-frame">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4558.675558599572!2d58.1379488!3d23.656134700000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e8de5f0d7ba8db3%3A0xb2efcdce91f9854e!2sNujoom%20Digital%20LLC!5e1!3m2!1sar!2som!4v1790526053059!5m2!1sar!2som"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+            title="Nujoom Digital LLC on Google Maps">
+          </iframe>
+        </div>
+
+        <div class="side-links">
+          <a class="side-link" href="https://maps.app.goo.gl/ite1ynLcf1CYcKJr5" target="_blank" rel="noopener">
+            <%= t("site.contact.find_us") %>
+          </a>
+          <a class="side-link" href="https://instagram.com/nujoom.digital" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+            <%= t("site.contact.instagram") %>
+          </a>
+        </div>
       </div>
       <form class="contact-form" id="contactForm">
         <div class="field">
-          <label for="cName">Name</label>
+          <label for="cName"><%= t("site.contact.name_label") %></label>
           <input id="cName" type="text" autocomplete="name" required />
         </div>
         <div class="field">
-          <label for="cEmail">Email</label>
+          <label for="cEmail"><%= t("site.contact.email_label") %></label>
           <input id="cEmail" type="email" autocomplete="email" required />
         </div>
         <div class="field">
-          <label for="cMessage">Message</label>
+          <label for="cMessage"><%= t("site.contact.message_label") %></label>
           <textarea id="cMessage" required></textarea>
         </div>
-        <button class="btn btn-primary" type="submit" id="contactSubmit">Send message</button>
-        <div class="book-error" id="contactError">Please fill in all fields with a valid email.</div>
+        <button class="btn btn-primary" type="submit" id="contactSubmit"><%= t("site.contact.submit") %></button>
+        <div class="book-error" id="contactError"></div>
         <div class="book-confirm" id="contactConfirm"></div>
       </form>
     </div>
   </section>
 
   <footer>
-    © <span id="year"></span> Nujoom Digital — websites, social media, and tutoring, based in Muscat.
+    <%= t("site.footer.text_html", year: Date.current.year) %>
   </footer>
 </div>
 
 <script>
+  window.NUJOOM_I18N = <%= raw({
+    booking: {
+      errorGeneric: t("site.booking.error_generic"),
+      errorFailed: t("site.booking.error_failed"),
+      errorTaken: t("site.booking.error_taken"),
+      confirmTemplate: t("site.booking.confirm_html", slot: "%{slot}", email: "%{email}"),
+      openOne: t("site.booking.open_count.one", count: "%{count}"),
+      openOther: t("site.booking.open_count.other", count: "%{count}"),
+      full: t("site.booking.full"),
+      noSlots: t("site.booking.no_slots")
+    },
+    contact: {
+      errorGeneric: t("site.contact.error_generic"),
+      errorFailed: t("site.contact.error_failed"),
+      confirmTemplate: t("site.contact.confirm_html", name: "%{name}")
+    }
+  }.to_json) %>;
+</script>
+
+<script>
 (function() {
   const root = document;
-  root.getElementById('year').textContent = new Date().getFullYear();
+  const I18N = window.NUJOOM_I18N;
 
   const csrfToken = root.querySelector('meta[name="csrf-token"]')?.content;
+
+  // Mobile hamburger menu
+  const navToggle = root.getElementById('navToggle');
+  const navMobile = root.getElementById('navMobile');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navMobile.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navMobile.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navMobile.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
   const dayPicker = root.getElementById('dayPicker');
   const timeGrid = root.getElementById('timeGrid');
   const noSlotsMsg = root.getElementById('noSlotsMsg');
@@ -335,6 +468,8 @@
   const selectedSlotLabel = root.getElementById('selectedSlotLabel');
   const bkError = root.getElementById('bkError');
   const bookConfirm = root.getElementById('bookConfirm');
+
+  noSlotsMsg.textContent = I18N.booking.noSlots;
 
   let daysData = []; // [{ date, label, slots: [{ time, label, available }] }]
   let activeDate = null; // date string of the day currently shown in the time grid
@@ -351,6 +486,11 @@
     return day.slots.filter(s => s.available).length;
   }
 
+  function openLabel(count) {
+    const template = count === 1 ? I18N.booking.openOne : I18N.booking.openOther;
+    return template.replace('%{count}', count);
+  }
+
   function pickDefaultDate() {
     // Prefer the first day that still has an open slot; otherwise just show the first day.
     const firstOpen = daysData.find(d => openCount(d) > 0);
@@ -363,7 +503,7 @@
       const count = openCount(day);
       const pill = document.createElement('button');
       pill.className = 'day-pill' + (day.date === activeDate ? ' selected' : '') + (count === 0 ? ' full' : '');
-      pill.innerHTML = `<span class="dname">${day.label}</span><span class="dcount">${count > 0 ? count + ' open' : 'Fully booked'}</span>`;
+      pill.innerHTML = `<span class="dname">${day.label}</span><span class="dcount">${count > 0 ? openLabel(count) : I18N.booking.full}</span>`;
       pill.addEventListener('click', () => {
         activeDate = day.date;
         renderDayPicker();
@@ -431,7 +571,7 @@
     const emailOk = /\S+@\S+\.\S+/.test(email);
 
     if (!name || !emailOk || !selected) {
-      bkError.textContent = 'Please add your name and a valid email.';
+      bkError.textContent = I18N.booking.errorGeneric;
       bkError.classList.add('show');
       return;
     }
@@ -453,7 +593,7 @@
       const data = await res.json();
 
       if (!res.ok) {
-        bkError.textContent = (data.errors && data.errors[0]) || 'Sorry — that slot was just taken. Pick another.';
+        bkError.textContent = (data.errors && data.errors[0]) || I18N.booking.errorTaken;
         bkError.classList.add('show');
         selected = null;
         bookForm.classList.remove('show');
@@ -461,7 +601,9 @@
         return;
       }
 
-      bookConfirm.textContent = `You're booked for ${selected.label}. We'll be in touch to confirm — reach out anytime at mr.negm90@gmail.com if you need to change anything.`;
+      bookConfirm.textContent = I18N.booking.confirmTemplate
+        .replace('%{slot}', selected.label)
+        .replace('%{email}', 'mr.negm90@gmail.com');
       bookConfirm.classList.add('show');
       bookForm.classList.remove('show');
       root.getElementById('bkName').value = '';
@@ -470,7 +612,7 @@
       selected = null;
       await refreshAvailability();
     } catch (e) {
-      bkError.textContent = 'Something went wrong — please try again.';
+      bkError.textContent = I18N.booking.errorFailed;
       bkError.classList.add('show');
     } finally {
       submitBtn.disabled = false;
@@ -495,7 +637,7 @@
     contactConfirm.classList.remove('show');
 
     if (!name || !emailOk || !message) {
-      contactError.textContent = 'Please fill in all fields with a valid email.';
+      contactError.textContent = I18N.contact.errorGeneric;
       contactError.classList.add('show');
       return;
     }
@@ -515,16 +657,16 @@
       const data = await res.json();
 
       if (!res.ok) {
-        contactError.textContent = (data.errors && data.errors[0]) || 'Something went wrong — please try again.';
+        contactError.textContent = (data.errors && data.errors[0]) || I18N.contact.errorFailed;
         contactError.classList.add('show');
         return;
       }
 
-      contactConfirm.textContent = `Thanks, ${name} — your message is on its way. We'll follow up within a day or two.`;
+      contactConfirm.textContent = I18N.contact.confirmTemplate.replace('%{name}', name);
       contactConfirm.classList.add('show');
       contactForm.reset();
     } catch (err) {
-      contactError.textContent = 'Something went wrong — please try again.';
+      contactError.textContent = I18N.contact.errorFailed;
       contactError.classList.add('show');
     } finally {
       contactSubmit.disabled = false;
