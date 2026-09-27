@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   get "available_slots", to: "bookings#available_slots"
   resources :bookings, only: [ :create ]
+  post "contact", to: "contacts#create"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -172,8 +172,6 @@
     margin-top: 18px; font-family:'JetBrains Mono', monospace; font-size: 15px;
     color: var(--gold); word-break: break-all;
   }
-  .fallback-link { display:none; margin-top: 14px; font-size: 13px; }
-  .fallback-link.show { display:block; }
   .gmb-link { display:inline-block; margin-top: 18px; font-size: 14px; color: var(--gold); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; }
   .gmb-link:hover { color: var(--gold-bright); border-color: var(--gold); }
 
@@ -300,7 +298,6 @@
         <h2 style="font-size:26px; margin-bottom:14px;">Have a project in mind?</h2>
         <p>Tell us what you're trying to build and we'll follow up within a day or two.</p>
         <div class="email-line">mr.negm90@gmail.com</div>
-        <a class="fallback-link" id="fallbackLink" href="#">Your email app didn't open? Click here to email directly →</a>
         <a class="gmb-link" href="https://maps.app.goo.gl/ite1ynLcf1CYcKJr5" target="_blank" rel="noopener">Find us on Google →</a>
       </div>
       <form class="contact-form" id="contactForm">
@@ -316,7 +313,9 @@
           <label for="cMessage">Message</label>
           <textarea id="cMessage" required></textarea>
         </div>
-        <button class="btn btn-primary" type="submit">Send message</button>
+        <button class="btn btn-primary" type="submit" id="contactSubmit">Send message</button>
+        <div class="book-error" id="contactError">Please fill in all fields with a valid email.</div>
+        <div class="book-confirm" id="contactConfirm"></div>
       </form>
     </div>
   </section>
@@ -455,23 +454,56 @@
 
   refreshAvailability();
 
-  // Contact form → mailto
+  // Contact form → real email via the app
   const contactForm = root.getElementById('contactForm');
-  const fallbackLink = root.getElementById('fallbackLink');
-  contactForm.addEventListener('submit', (e) => {
+  const contactError = root.getElementById('contactError');
+  const contactConfirm = root.getElementById('contactConfirm');
+  const contactSubmit = root.getElementById('contactSubmit');
+
+  contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = root.getElementById('cName').value.trim();
     const email = root.getElementById('cEmail').value.trim();
     const message = root.getElementById('cMessage').value.trim();
-    if (!name || !email || !message) return;
+    const emailOk = /\S+@\S+\.\S+/.test(email);
 
-    const subject = encodeURIComponent(`New project inquiry from ${name}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
-    const mailto = `mailto:mr.negm90@gmail.com?subject=${subject}&body=${body}`;
+    contactConfirm.classList.remove('show');
 
-    window.open(mailto, '_blank');
-    fallbackLink.href = mailto;
-    fallbackLink.classList.add('show');
+    if (!name || !emailOk || !message) {
+      contactError.textContent = 'Please fill in all fields with a valid email.';
+      contactError.classList.add('show');
+      return;
+    }
+    contactError.classList.remove('show');
+    contactSubmit.disabled = true;
+
+    try {
+      const res = await fetch('/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({ name, email, message })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        contactError.textContent = (data.errors && data.errors[0]) || 'Something went wrong — please try again.';
+        contactError.classList.add('show');
+        return;
+      }
+
+      contactConfirm.textContent = `Thanks, ${name} — your message is on its way. We'll follow up within a day or two.`;
+      contactConfirm.classList.add('show');
+      contactForm.reset();
+    } catch (err) {
+      contactError.textContent = 'Something went wrong — please try again.';
+      contactError.classList.add('show');
+    } finally {
+      contactSubmit.disabled = false;
+    }
   });
 })();
 </script>
