@@ -113,33 +113,30 @@
   /* BOOKING */
   .book-layout { display:grid; grid-template-columns: 300px 1fr; gap: 40px; }
   .book-note { font-size: 14.5px; color: var(--paper-dim); }
-  .book-note .mono-line { display:flex; gap:10px; align-items:baseline; margin-top:18px; font-size: 13px; }
-  .book-note .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px; }
-  .dot.open { background: var(--gold); }
-  .dot.taken { background: var(--paper-dim); opacity:.4; }
 
-  .day-col { display:flex; flex-direction:column; gap: 20px; }
-  .day-block { border: 1px solid var(--line); background: var(--panel); }
-  .day-block-head {
-    display:flex; justify-content:space-between; align-items:baseline;
-    padding: 14px 18px; border-bottom: 1px solid var(--line);
-    font-family:'JetBrains Mono', monospace; font-size:13px; color: var(--gold);
+  .day-picker { display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; margin-bottom:26px; scrollbar-width:thin; }
+  .day-pill {
+    flex:0 0 auto; min-width:96px; text-align:left; cursor:pointer;
+    background: var(--panel); border: 1px solid var(--line); color: var(--paper);
+    padding: 12px 16px; border-radius: var(--radius); transition: background .15s ease, border-color .15s ease;
   }
-  .slot-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
-  .slot-btn {
-    padding: 16px 18px; text-align:left; background: transparent; border: none;
-    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
-    color: var(--paper); cursor:pointer; font-size: 14px;
-    display:flex; flex-direction:column; gap:6px; transition: background .15s ease;
+  .day-pill:hover:not(.selected) { border-color: var(--gold); }
+  .day-pill .dname { display:block; font-family:'JetBrains Mono', monospace; font-size:13px; color: var(--gold); white-space:nowrap; }
+  .day-pill .dcount { display:block; font-size:12px; color: var(--paper-dim); margin-top:5px; }
+  .day-pill.selected { background: var(--gold); border-color: var(--gold); }
+  .day-pill.selected .dname, .day-pill.selected .dcount { color: var(--ink); }
+  .day-pill.full { opacity:.5; }
+
+  .time-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(112px,1fr)); gap:10px; }
+  .time-btn {
+    padding: 14px 10px; text-align:center; background: var(--panel); border: 1px solid var(--line);
+    color: var(--paper); cursor:pointer; font-family:'JetBrains Mono', monospace; font-size:14px;
+    border-radius: var(--radius); transition: background .15s ease, border-color .15s ease;
   }
-  .slot-row .slot-btn:last-child { border-right:none; }
-  .slot-btn:hover:not(:disabled) { background: var(--panel-2); }
-  .slot-btn .t { font-family:'JetBrains Mono', monospace; font-size:14px; }
-  .slot-btn .s { font-size: 11px; text-transform:uppercase; letter-spacing:.08em; color: var(--gold); }
-  .slot-btn:disabled { cursor:not-allowed; opacity:.4; }
-  .slot-btn:disabled .s { color: var(--paper-dim); }
-  .slot-btn.selected { background: var(--gold); }
-  .slot-btn.selected .t, .slot-btn.selected .s { color: var(--ink); }
+  .time-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--panel-2); }
+  .time-btn:disabled { opacity:.35; cursor:not-allowed; text-decoration: line-through; }
+  .time-btn.selected { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .no-slots-msg { color: var(--paper-dim); font-size: 14px; padding: 10px 0 4px; }
 
   .book-form {
     margin-top: 22px; background: var(--panel); border: 1px solid var(--line);
@@ -217,7 +214,7 @@
         </div>
       </div>
       <div class="facet-wrap">
-        <%= image_tag "nujoom-logo.jpg", class: "facet-gem", alt: "Nujoom Digital logo" %>
+        <%= image_tag "nujoom-logo.png", class: "facet-gem", alt: "Nujoom Digital logo" %>
       </div>
     </div>
   </header>
@@ -258,14 +255,14 @@
     <div class="wrap book-layout">
       <div>
         <span class="eyebrow">Book a Call</span>
-        <h2 style="font-size:26px; margin-bottom:14px;">Pick a slot.</h2>
-        <p class="book-note">30-minute intro call — no charge, no pressure. Times shown are Muscat time (GST).</p>
-        <div class="mono-line"><span class="dot open"></span><span>Open slot</span></div>
-        <div class="mono-line"><span class="dot taken"></span><span>Already booked</span></div>
+        <h2 style="font-size:26px; margin-bottom:14px;">Pick a day and time.</h2>
+        <p class="book-note">30-minute intro call — no charge, no pressure. Times shown are Muscat time (GST). Struck-through times are already booked.</p>
       </div>
 
       <div>
-        <div class="day-col" id="dayCol"></div>
+        <div class="day-picker" id="dayPicker"></div>
+        <div class="time-grid" id="timeGrid"></div>
+        <div class="no-slots-msg" id="noSlotsMsg" style="display:none;">No times left this day — try another day above.</div>
 
         <div class="book-form" id="bookForm">
           <h4>Confirm your call</h4>
@@ -331,13 +328,16 @@
   root.getElementById('year').textContent = new Date().getFullYear();
 
   const csrfToken = root.querySelector('meta[name="csrf-token"]')?.content;
-  const dayCol = root.getElementById('dayCol');
+  const dayPicker = root.getElementById('dayPicker');
+  const timeGrid = root.getElementById('timeGrid');
+  const noSlotsMsg = root.getElementById('noSlotsMsg');
   const bookForm = root.getElementById('bookForm');
   const selectedSlotLabel = root.getElementById('selectedSlotLabel');
   const bkError = root.getElementById('bkError');
   const bookConfirm = root.getElementById('bookConfirm');
 
   let daysData = []; // [{ date, label, slots: [{ time, label, available }] }]
+  let activeDate = null; // date string of the day currently shown in the time grid
   let selected = null; // { date, time, label }
 
   async function fetchAvailability() {
@@ -347,39 +347,64 @@
     daysData = data.days;
   }
 
-  function render() {
-    dayCol.innerHTML = '';
+  function openCount(day) {
+    return day.slots.filter(s => s.available).length;
+  }
+
+  function pickDefaultDate() {
+    // Prefer the first day that still has an open slot; otherwise just show the first day.
+    const firstOpen = daysData.find(d => openCount(d) > 0);
+    return (firstOpen || daysData[0] || {}).date || null;
+  }
+
+  function renderDayPicker() {
+    dayPicker.innerHTML = '';
     daysData.forEach(day => {
-      const block = document.createElement('div');
-      block.className = 'day-block';
-
-      const head = document.createElement('div');
-      head.className = 'day-block-head';
-      head.innerHTML = `<span>${day.label}</span>`;
-      block.appendChild(head);
-
-      const row = document.createElement('div');
-      row.className = 'slot-row';
-
-      day.slots.forEach(slot => {
-        const btn = document.createElement('button');
-        btn.className = 'slot-btn';
-        btn.disabled = !slot.available;
-        btn.innerHTML = `<span class="t mono">${slot.label}</span><span class="s">${slot.available ? 'Open' : 'Booked'}</span>`;
-        if (selected && selected.date === day.date && selected.time === slot.time) {
-          btn.classList.add('selected');
-        }
-        btn.addEventListener('click', () => {
-          selected = { date: day.date, time: slot.time, label: `${day.label} · ${slot.label} GST` };
-          render();
-          showForm();
-        });
-        row.appendChild(btn);
+      const count = openCount(day);
+      const pill = document.createElement('button');
+      pill.className = 'day-pill' + (day.date === activeDate ? ' selected' : '') + (count === 0 ? ' full' : '');
+      pill.innerHTML = `<span class="dname">${day.label}</span><span class="dcount">${count > 0 ? count + ' open' : 'Fully booked'}</span>`;
+      pill.addEventListener('click', () => {
+        activeDate = day.date;
+        renderDayPicker();
+        renderTimeGrid();
       });
-
-      block.appendChild(row);
-      dayCol.appendChild(block);
+      dayPicker.appendChild(pill);
     });
+  }
+
+  function renderTimeGrid() {
+    timeGrid.innerHTML = '';
+    const day = daysData.find(d => d.date === activeDate);
+    if (!day || day.slots.length === 0) {
+      noSlotsMsg.style.display = 'block';
+      return;
+    }
+    noSlotsMsg.style.display = 'none';
+
+    day.slots.forEach(slot => {
+      const btn = document.createElement('button');
+      btn.className = 'time-btn';
+      btn.disabled = !slot.available;
+      btn.textContent = slot.label;
+      if (selected && selected.date === day.date && selected.time === slot.time) {
+        btn.classList.add('selected');
+      }
+      btn.addEventListener('click', () => {
+        selected = { date: day.date, time: slot.time, label: `${day.label} · ${slot.label} GST` };
+        renderTimeGrid();
+        showForm();
+      });
+      timeGrid.appendChild(btn);
+    });
+  }
+
+  function render() {
+    if (!activeDate || !daysData.some(d => d.date === activeDate)) {
+      activeDate = pickDefaultDate();
+    }
+    renderDayPicker();
+    renderTimeGrid();
   }
 
   function showForm() {

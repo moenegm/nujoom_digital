@@ -25,8 +25,21 @@ default: &default
 
 
 development:
-  <<: *default
-  database: bookingapp_development
+  primary:
+    <<: *default
+    database: bookingapp_development
+  cache:
+    <<: *default
+    database: bookingapp_development_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: bookingapp_development_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: bookingapp_development_cable
+    migrations_paths: db/cable_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

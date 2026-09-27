@@ -61,6 +61,16 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
+  # Use Solid Queue locally too, on its own database (matches production's
+  # multi-database setup — see config/database.yml's development section).
+  # Puma's :solid_queue plugin (config/puma.rb) starts the job supervisor
+  # inside the dev server regardless of this setting, so without this the
+  # supervisor was looking for its tables on the primary/default connection,
+  # where they don't exist — that's what crashed `bin/dev` with
+  # "relation solid_queue_processes does not exist".
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
   # Highlight code that triggered redirect in logs.
   config.action_dispatch.verbose_redirect_logs = true
 
