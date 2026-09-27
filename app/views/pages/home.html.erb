@@ -331,68 +331,47 @@
   const root = document;
   root.getElementById('year').textContent = new Date().getFullYear();
 
-  const TIMES = [
-    { key: '10:00', label: '10:00 AM' },
-    { key: '13:00', label: '1:00 PM' },
-    { key: '15:30', label: '3:30 PM' },
-  ];
-
-  function nextBusinessDays(count) {
-    const days = [];
-    let d = new Date();
-    d.setDate(d.getDate() + 1); // start tomorrow
-    while (days.length < count) {
-      const day = d.getDay();
-      if (day !== 0 && day !== 6) {
-        days.push(new Date(d));
-      }
-      d.setDate(d.getDate() + 1);
-    }
-    return days;
-  }
-
-  function fmtDate(d) {
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  }
-  function isoDate(d) {
-    return d.toISOString().slice(0, 10);
-  }
-
-  const days = nextBusinessDays(6);
+  const csrfToken = root.querySelector('meta[name="csrf-token"]')?.content;
   const dayCol = root.getElementById('dayCol');
-  let bookings = [];
+  const bookForm = root.getElementById('bookForm');
+  const selectedSlotLabel = root.getElementById('selectedSlotLabel');
+  const bkError = root.getElementById('bkError');
+  const bookConfirm = root.getElementById('bookConfirm');
+
+  let daysData = []; // [{ date, label, slots: [{ time, label, available }] }]
   let selected = null; // { date, time, label }
 
-  function slotTaken(dateIso, timeKey) {
-    return bookings.some(b => b.date === dateIso && b.time === timeKey);
+  async function fetchAvailability() {
+    const res = await fetch('/available_slots', { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('Failed to load availability');
+    const data = await res.json();
+    daysData = data.days;
   }
 
   function render() {
     dayCol.innerHTML = '';
-    days.forEach(d => {
-      const iso = isoDate(d);
+    daysData.forEach(day => {
       const block = document.createElement('div');
       block.className = 'day-block';
 
       const head = document.createElement('div');
       head.className = 'day-block-head';
-      head.innerHTML = `<span>${fmtDate(d)}</span>`;
+      head.innerHTML = `<span>${day.label}</span>`;
       block.appendChild(head);
 
       const row = document.createElement('div');
       row.className = 'slot-row';
 
-      TIMES.forEach(t => {
-        const taken = slotTaken(iso, t.key);
+      day.slots.forEach(slot => {
         const btn = document.createElement('button');
         btn.className = 'slot-btn';
-        btn.disabled = taken;
-        btn.innerHTML = `<span class="t mono">${t.label}</span><span class="s">${taken ? 'Booked' : 'Open'}</span>`;
-        if (selected && selected.date === iso && selected.time === t.key) {
+        btn.disabled = !slot.available;
+        btn.innerHTML = `<span class="t mono">${slot.label}</span><span class="s">${slot.available ? 'Open' : 'Booked'}</span>`;
+        if (selected && selected.date === day.date && selected.time === slot.time) {
           btn.classList.add('selected');
         }
         btn.addEventListener('click', () => {
-          selected = { date: iso, time: t.key, label: `${fmtDate(d)} · ${t.label} GST` };
+          selected = { date: day.date, time: slot.time, label: `${day.label} · ${slot.label} GST` };
           render();
           showForm();
         });
@@ -404,11 +383,6 @@
     });
   }
 
-  const bookForm = root.getElementById('bookForm');
-  const selectedSlotLabel = root.getElementById('selectedSlotLabel');
-  const bkError = root.getElementById('bkError');
-  const bookConfirm = root.getElementById('bookConfirm');
-
   function showForm() {
     bookForm.classList.add('show');
     bookConfirm.classList.remove('show');
@@ -417,11 +391,15 @@
     bookForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  async function loadBookings() {
-    bookings = [];
-    render();
+  async function refreshAvailability() {
+    try {
+      await fetchAvailability();
+      render();
+    } catch (e) {
+      // If this fails we just leave the last-known calendar state on screen.
+    }
   }
-  
+
   root.getElementById('bkSubmit').addEventListener('click', async () => {
     const name = root.getElementById('bkName').value.trim();
     const email = root.getElementById('bkEmail').value.trim();
@@ -429,38 +407,53 @@
     const emailOk = /\S+@\S+\.\S+/.test(email);
 
     if (!name || !emailOk || !selected) {
+      bkError.textContent = 'Please add your name and a valid email.';
       bkError.classList.add('show');
       return;
     }
     bkError.classList.remove('show');
 
-    if (slotTaken(selected.date, selected.time)) {
-      bkError.textContent = 'Sorry — that slot was just taken. Pick another.';
-      bkError.classList.add('show');
-      selected = null;
-      render();
+    const submitBtn = root.getElementById('bkSubmit');
+    submitBtn.disabled = true;
+
+    try {
+      const res = await fetch('/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({ date: selected.date, time: selected.time, name, email, note })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        bkError.textContent = (data.errors && data.errors[0]) || 'Sorry — that slot was just taken. Pick another.';
+        bkError.classList.add('show');
+        selected = null;
+        bookForm.classList.remove('show');
+        await refreshAvailability();
+        return;
+      }
+
+      bookConfirm.textContent = `You're booked for ${selected.label}. We'll be in touch to confirm — reach out anytime at mr.negm90@gmail.com if you need to change anything.`;
+      bookConfirm.classList.add('show');
       bookForm.classList.remove('show');
-      return;
+      root.getElementById('bkName').value = '';
+      root.getElementById('bkEmail').value = '';
+      root.getElementById('bkNote').value = '';
+      selected = null;
+      await refreshAvailability();
+    } catch (e) {
+      bkError.textContent = 'Something went wrong — please try again.';
+      bkError.classList.add('show');
+    } finally {
+      submitBtn.disabled = false;
     }
-
-    bookings.push({
-      date: selected.date,
-      time: selected.time,
-      name, email, note,
-      bookedAt: new Date().toISOString()
-    });
-
-    bookConfirm.textContent = `You're booked for ${selected.label}. A confirmation would normally be emailed to ${email} — for now, reach out at mr.negm90@gmail.com to lock it in on our end.`;
-    bookConfirm.classList.add('show');
-    bookForm.classList.remove('show');
-    root.getElementById('bkName').value = '';
-    root.getElementById('bkEmail').value = '';
-    root.getElementById('bkNote').value = '';
-    selected = null;
-    render();
   });
 
-  loadBookings();
+  refreshAvailability();
 
   // Contact form → mailto
   const contactForm = root.getElementById('contactForm');

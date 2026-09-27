@@ -1,0 +1,13 @@
+Hi <%= @booking.client_name %>,
+
+You're booked for <%= @formatted_time %> with Nujoom Digital.
+
+Join here when it's time: <%= @meet_link %>
+
+A calendar file is attached to this email — open it to add the appointment to your calendar.
+<% if @booking.note.present? %>
+Your note: <%= @booking.note %>
+<% end %>
+Need to reschedule or cancel? Just reply to this email, or reach out at mr.negm90@gmail.com.
+
+— Nujoom Digital

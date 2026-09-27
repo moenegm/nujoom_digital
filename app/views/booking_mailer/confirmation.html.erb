@@ -1,0 +1,15 @@
+<p>Hi <%= @booking.client_name %>,</p>
+
+<p>You're booked for <strong><%= @formatted_time %></strong> with Nujoom Digital.</p>
+
+<p>Join here when it's time: <a href="<%= @meet_link %>"><%= @meet_link %></a></p>
+
+<p>We've attached a calendar file to this email — open it to add the appointment to Google Calendar, Outlook, or Apple Calendar.</p>
+
+<% if @booking.note.present? %>
+  <p><strong>Your note:</strong> <%= @booking.note %></p>
+<% end %>
+
+<p>Need to reschedule or cancel? Just reply to this email, or reach out at mr.negm90@gmail.com.</p>
+
+<p>— Nujoom Digital</p>

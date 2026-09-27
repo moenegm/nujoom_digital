@@ -1,0 +1,13 @@
+<p>Hi <%= @booking.client_name %>,</p>
+
+<% if @timing == "day_before" %>
+  <p>Just a reminder — your call with Nujoom Digital is tomorrow, <strong><%= @formatted_time %></strong>.</p>
+<% else %>
+  <p>Just a reminder — your call with Nujoom Digital is today, <strong><%= @formatted_time %></strong>.</p>
+<% end %>
+
+<p>Join here: <a href="<%= @meet_link %>"><%= @meet_link %></a></p>
+
+<p>Need to reschedule? Just reply to this email, or reach out at mr.negm90@gmail.com.</p>
+
+<p>— Nujoom Digital</p>

@@ -1,0 +1,12 @@
+Hi <%= @booking.client_name %>,
+
+<% if @timing == "day_before" %>
+Just a reminder — your call with Nujoom Digital is tomorrow, <%= @formatted_time %>.
+<% else %>
+Just a reminder — your call with Nujoom Digital is today, <%= @formatted_time %>.
+<% end %>
+Join here: <%= @meet_link %>
+
+Need to reschedule? Just reply to this email, or reach out at mr.negm90@gmail.com.
+
+— Nujoom Digital

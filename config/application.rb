@@ -22,6 +22,10 @@ module Bookingapp
     # in config/environments, which are processed later.
     #
     # config.time_zone = "Central Time (US & Canada)"
+    # Nujoom Digital is based in Muscat, Oman (GST, UTC+4, no DST).
+    # Rails groups Muscat under the "Abu Dhabi" zone name since they share the same offset.
+    config.time_zone = "Abu Dhabi"
+    config.active_record.default_timezone = :utc
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end
