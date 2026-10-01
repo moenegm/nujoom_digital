@@ -1,3 +1,18 @@
+<% content_for :head do %>
+  <script>
+    // Applied in <head>, before the page paints, so a returning visitor who
+    // picked light mode doesn't see a flash of the default dark theme first.
+    (function () {
+      try {
+        var saved = localStorage.getItem('nujoom-theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
+<% end %>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap');
 
@@ -14,7 +29,25 @@
     --radius: 2px;
   }
 
+  /* Light mode — same variable names, flipped values. Everything in this
+     file reads colors through these variables (background: var(--ink),
+     text: var(--paper), etc.), so swapping them here is enough to re-skin
+     the whole site without touching any component rule below. */
+  :root[data-theme="light"]{
+    --ink:#f7f4ec;
+    --panel:#ffffff;
+    --panel-2:#f1ece0;
+    --gold:#9c7324;
+    --gold-bright:#7d5b1a;
+    --paper:#1c2436;
+    --paper-dim:#5a6372;
+    --cream:#3a3326;
+    --line: rgba(28,36,54,0.12);
+  }
+
   * { box-sizing: border-box; }
+
+  .nujoom-site, .nujoom-site * { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
 
   .nujoom-site {
     background: var(--ink);
@@ -81,6 +114,27 @@
   }
   .lang-switch:hover { border-color: var(--gold); }
 
+  .lang-switch-persistent {
+    display: none; /* shown only on narrow widths, see the 700px media query below */
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; text-decoration: none;
+    color: var(--paper); flex-shrink: 0; white-space: nowrap;
+  }
+  .lang-switch-persistent:hover { border-color: var(--gold); }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; flex-shrink: 0;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: none; color: var(--paper); cursor: pointer; padding: 0;
+  }
+  .theme-toggle:hover { border-color: var(--gold); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .icon-moon { display: block; }
+  .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+
   .nav-toggle {
     display: none; background: none; border: none; color: var(--paper); cursor: pointer;
     padding: 6px; flex-shrink: 0;
@@ -99,6 +153,7 @@
 
   @media (max-width: 700px) {
     .nav-links { display: none; }
+    .lang-switch-persistent { display: inline-block; }
     .nav-toggle { display: inline-flex; }
   }
 
@@ -269,6 +324,17 @@
         <a href="#contact"><%= t("site.nav.contact") %></a>
         <a class="lang-switch" href="?locale=<%= I18n.locale == :ar ? "en" : "ar" %>"><%= t("site.nav.lang_toggle") %></a>
       </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between dark and light mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.7A8.5 8.5 0 0 1 9.3 3.5a.6.6 0 0 0-.7-.8A10 10 0 1 0 21.3 15.4a.6.6 0 0 0-.8-.7Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8 6 18M18 6l1.8-1.8"/></svg>
+      </button>
+      <%# Always-visible language switch for phones — sits outside the hamburger
+          menu so a visitor who lands on the wrong language isn't stuck having
+          to guess that the pancake icon holds a language option. Hidden on
+          desktop widths, where the version inside .nav-links already shows. %>
+      <a class="lang-switch-persistent" href="?locale=<%= I18n.locale == :ar ? "en" : "ar" %>">
+        <%= t("site.nav.lang_toggle") %>
+      </a>
       <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
@@ -446,6 +512,16 @@
   const I18N = window.NUJOOM_I18N;
 
   const csrfToken = root.querySelector('meta[name="csrf-token"]')?.content;
+
+  // Dark/light mode toggle — the early <head> script already applied any
+  // saved preference before this ran, so this just wires up the button.
+  const themeToggle = root.getElementById('themeToggle');
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const next = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('nujoom-theme', next); } catch (e) {}
+  });
 
   // Mobile hamburger menu
   const navToggle = root.getElementById('navToggle');
