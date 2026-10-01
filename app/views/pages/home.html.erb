@@ -26,6 +26,7 @@
     --paper-dim:#a9b3c6;
     --cream:#f2e5c4;
     --line: rgba(242,229,196,0.12);
+    --nav-bg: rgba(18,16,20,0.86);
     --radius: 2px;
   }
 
@@ -43,6 +44,7 @@
     --paper-dim:#5a6372;
     --cream:#3a3326;
     --line: rgba(28,36,54,0.12);
+    --nav-bg: rgba(255,255,255,0.86);
   }
 
   * { box-sizing: border-box; }
@@ -97,7 +99,7 @@
   /* NAV */
   .nav {
     position: sticky; top: 0; z-index: 50;
-    background: rgba(18,16,20,0.86);
+    background: var(--nav-bg);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
